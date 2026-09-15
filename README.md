@@ -1,339 +1,181 @@
 # DukaFlow
 
-> **A WhatsApp-first ordering and business management platform for small businesses.**
+> **A simple WhatsApp-first ordering and business management platform for small businesses.**
 
-DukaFlow helps small businesses manage customer orders, menus, payments, and daily operations through a simple web dashboard, while allowing customers to interact with businesses through **WhatsApp**.
+DukaFlow helps small businesses, starting with **restaurants**, manage customer orders, menus, payments, and daily operations through one simple platform.
 
-The initial focus is on **small restaurants**, with the platform designed to expand to other small-business use cases in the future.
-
----
-
-## 🚀 What Problem Does DukaFlow Solve?
-
-Many small restaurants rely heavily on **WhatsApp, phone calls, and manual processes** to receive and manage customer orders.
-
-This creates problems such as:
-
-* Orders getting lost in conversations
-* Customers struggling to view available menu items
-* Manual calculation of order totals
-* Difficulty tracking order status
-* Payment confirmation problems
-* Restaurant staff having no centralized order dashboard
-* Repetitive work when responding to customers
-* Limited digital tools designed specifically for small businesses
-
-For a small restaurant, adopting a large and complicated business management system can also be expensive and difficult.
+Instead of relying on scattered WhatsApp conversations, phone calls, and manual order tracking, DukaFlow brings the process into a structured system.
 
 ---
 
-## 💡 The Solution
+## 💡 The Problem
 
-DukaFlow brings these processes together into one simple platform.
+Many small restaurants rely heavily on WhatsApp to communicate with customers and receive orders.
+
+This can lead to:
+
+* Lost or forgotten orders
+* Manual order-taking
+* Difficulty managing menus and prices
+* Confusion when handling multiple customers
+* Payment tracking challenges
+* Lack of a simple system for managing orders
+
+Existing business management systems can also be too complex or expensive for small businesses.
+
+---
+
+## 🚀 The Solution
+
+DukaFlow provides a simple digital workflow:
 
 ```text
 Customer
    ↓
 WhatsApp
    ↓
-DukaFlow
+Browse Menu
    ↓
-Restaurant Menu
+Add to Cart
    ↓
-Cart
-   ↓
-Order
+Place Order
    ↓
 Payment
    ↓
 Restaurant Dashboard
+   ↓
+Order Fulfillment
 ```
 
-A customer can interact with a restaurant through WhatsApp, browse its menu, build an order, provide the required information, and eventually pay using supported payment methods.
+Restaurant owners can manage their business from a web dashboard, while customers can interact with the restaurant through WhatsApp.
 
-The restaurant receives and manages the order from the DukaFlow dashboard.
+The goal is to make digital ordering **simple, affordable, and accessible to small businesses**.
 
 ---
 
-## 🍽️ What Can DukaFlow Do?
+## ✨ Core Features
 
-The initial platform is being developed around these capabilities:
+* 🏪 Restaurant management
+* 🍔 Menu and category management
+* 🛒 Customer cart and ordering
+* 💬 WhatsApp ordering
+* 💳 Mobile Money payments
+* 📦 Order management
+* 👥 Customer management
+* 📊 Basic business operations dashboard
 
-### Restaurant Management
-
-Restaurants can manage:
-
-* Business profile
-* Contact information
-* Operating information
-* Restaurant settings
-
-### Menu Management
-
-Restaurants can:
-
-* Create menu categories
-* Add menu items
-* Set prices
-* Add descriptions
-* Add images
-* Mark items as available/unavailable
-
-### Ordering
-
-Customers can:
-
-* Browse the menu
-* Select items
-* Choose quantities
-* Review their cart
-* Place orders
-* Receive order confirmations
-
-Restaurants can:
-
-* View incoming orders
-* Confirm or reject orders
-* Update order status
-* View order history
-
-### WhatsApp
-
-WhatsApp will be the primary customer-facing channel for the MVP.
-
-The goal is to make ordering as simple as:
-
-```text
-"Hi"
-   ↓
-View Menu
-   ↓
-Choose Food
-   ↓
-Add to Cart
-   ↓
-Checkout
-   ↓
-Pay
-   ↓
-Order Confirmed
-```
-
-### Payments
-
-The platform is designed to support mobile-money payments, initially targeting providers such as:
-
-* MTN Mobile Money
-* Airtel Money
-
-Payment integrations will be implemented through provider-specific adapters so additional providers can be added later.
+> Features are being implemented incrementally as part of the DukaFlow MVP roadmap.
 
 ---
 
-# 🛠️ Technology Stack
+## 🛠️ Technology Stack
 
-DukaFlow is being developed as a **modular monolith** rather than a collection of microservices.
+### Frontend
 
-## Backend
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
 
-* **C#**
-* **ASP.NET Core Web API**
-* **Entity Framework Core**
-* **Microsoft SQL Server**
-* **JWT Authentication**
-* **Swagger / OpenAPI**
+### Backend
 
-### Development Environment
+* C#
+* ASP.NET Core Web API
+* Entity Framework Core
+* Microsoft SQL Server
+* JWT Authentication
+* Swagger / OpenAPI
 
-* **Visual Studio Community 2022**
+### Development
+
+* Visual Studio Community 2022
 * SQL Server Management Studio
-* Postman
 * Git & GitHub
+* Postman
 
 ---
 
-## Frontend
+## 🏗️ Architecture
 
-* **React**
-* **TypeScript**
-* **Vite**
-* **Tailwind CSS**
-
-The frontend communicates with the ASP.NET Core Web API.
+DukaFlow is initially being developed as a **modular monolith**.
 
 ```text
-React + TypeScript + Vite
-          ↓
-   ASP.NET Core API
-          ↓
-    Entity Framework
-          ↓
-       SQL Server
+React + TypeScript
+       ↓
+ASP.NET Core Web API
+       ↓
+Entity Framework Core
+       ↓
+SQL Server
 ```
+
+External services such as WhatsApp and payment providers are integrated through dedicated application/infrastructure abstractions.
+
+This keeps the core business logic independent from external platforms.
 
 ---
 
-# 🏗️ Architecture
-
-DukaFlow uses a modular monolith architecture to keep the system simple while maintaining clear separation between business areas.
+## 🗺️ MVP Roadmap
 
 ```text
-DukaFlow
-│
-├── Authentication
-├── Restaurant Management
-├── Menu Management
-├── Ordering
-├── Conversations
-├── WhatsApp Integration
-└── Payments
+Phase 1 → Foundation
+Phase 2 → Restaurant & Menu Management
+Phase 3 → Ordering Engine
+Phase 4 → WhatsApp Integration
+Phase 5 → Payments
+Phase 6 → Production & Pilot
 ```
 
-External services such as WhatsApp and payment providers are isolated from the core business logic.
-
-For example:
-
-```text
-WhatsApp
-   ↓
-WhatsApp Adapter
-   ↓
-DukaFlow Ordering Engine
-```
-
-This allows the same ordering engine to potentially support other channels in the future.
+**Current status:** 🚧 In Development
 
 ---
 
-# 📁 Project Structure
+## 📸 Screenshots & Demo
 
-```text
-DukaFlow/
-│
-├── backend/
-│   ├── DukaFlow.sln
-│   └── src/
-│       ├── DukaFlow.API/
-│       ├── DukaFlow.Application/
-│       ├── DukaFlow.Domain/
-│       └── DukaFlow.Infrastructure/
-│
-├── frontend/
-│   └── dukaflow-web/
-│
-├── tests/
-│   ├── DukaFlow.UnitTests/
-│   └── DukaFlow.IntegrationTests/
-│
-├── docs/
-└── README.md
-```
+> Screenshots, UI previews, architecture diagrams, and demo videos will be added as development progresses.
+
+<!-- Future screenshots can be added here -->
 
 ---
 
-# 🗺️ Development Roadmap
+## 🎯 Initial Target
 
-DukaFlow is being developed incrementally.
+DukaFlow is initially being developed for **small restaurants in Uganda**, with the architecture designed to support additional businesses and services in the future.
 
-### Phase 1 — Foundation
+Potential future expansion may include:
 
-Authentication, restaurant accounts, database, API foundation and dashboard.
+* Retail businesses
+* Delivery services
+* Ride/transport ordering
+* Healthcare services
+* Other small businesses
 
-**Status:** 🟡 In Development
-
-### Phase 2 — Restaurant & Menu
-
-Restaurant settings, menu categories, menu items and availability.
-
-**Status:** ⚪ Planned
-
-### Phase 3 — Ordering Engine
-
-Customers, carts, orders, checkout and order management.
-
-**Status:** ⚪ Planned
-
-### Phase 4 — WhatsApp
-
-WhatsApp integration, conversations, menu browsing and WhatsApp ordering.
-
-**Status:** ⚪ Planned
-
-### Phase 5 — Payments
-
-Mobile Money integrations and payment verification.
-
-**Status:** ⚪ Planned
-
-### Phase 6 — Production & Pilot
-
-Deployment, monitoring, security improvements and testing with approximately five restaurants.
-
-**Status:** ⚪ Planned
+The initial focus remains **restaurants**.
 
 ---
 
-# 📸 Screenshots
+## 📚 Documentation
 
-Screenshots and product visuals will be added as the application UI develops.
+More detailed technical documentation is available in:
 
-Planned screenshots include:
-
-* Login
-* Restaurant dashboard
-* Restaurant settings
-* Menu management
-* Menu preview
-* Order management
-* Order details
-* WhatsApp ordering flow
-* Payment flow
-
-Example future structure:
-
-```text
-docs/
-└── screenshots/
-    ├── dashboard.png
-    ├── menu-management.png
-    ├── orders.png
-    └── whatsapp-ordering.png
-```
+* [`backend/README.md`](backend/README.md) — Backend setup and architecture
+* [`frontend/README.md`](frontend/README.md) — Frontend setup and architecture
+* `docs/` — Additional project documentation
 
 ---
 
-# 🎯 MVP Goal
+## 📌 Project Status
 
-The goal of the first DukaFlow MVP is simple:
+DukaFlow is currently under active development.
 
-> **Help a small restaurant receive and manage customer orders through WhatsApp without relying on scattered chats and manual processes.**
-
-The MVP will be validated with real restaurants before expanding the platform into additional industries and more advanced features.
+The project will evolve through development, testing, and feedback from real businesses.
 
 ---
 
-## 📌 Current Focus
+## 👨‍💻 Development
 
-**Current phase:** Phase 1 — Foundation
+Built with a focus on:
 
-**Initial market:** Small restaurants
-
-**Target market:** Small businesses
-
-**Business model:** Monthly SaaS subscription
-
-**Primary customer channel:** WhatsApp
-
-**Business management interface:** Web dashboard
-
-**Backend:** ASP.NET Core / C# / EF Core / SQL Server
-
-**Frontend:** React / TypeScript / Vite / Tailwind CSS
-
-**IDE:** Visual Studio Community 2022
+**Simplicity • Reliability • Scalability • Real-world usability**
 
 ---
-
-## 📄 Documentation
-
-This README provides the high-level overview of DukaFlow and will evolve as the product develops.
