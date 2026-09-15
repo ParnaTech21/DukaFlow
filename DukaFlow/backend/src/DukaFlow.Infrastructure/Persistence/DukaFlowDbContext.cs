@@ -9,7 +9,8 @@ public class DukaFlowDbContext : DbContext
 
     public DbSet<User> Users => Set<User>();
     public DbSet<Restaurant> Restaurants => Set<Restaurant>();
-
+    public DbSet<MenuCategory> MenuCategories => Set<MenuCategory>();
+    public DbSet<MenuItem> MenuItems => Set<MenuItem>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DukaFlowDbContext).Assembly);

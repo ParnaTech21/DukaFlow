@@ -1,4 +1,5 @@
 using DukaFlow.Application.Auth.Interfaces;
+using DukaFlow.Application.Menu.Services;
 using DukaFlow.Application.Restaurants.Interfaces;
 using DukaFlow.Infrastructure.Auth;
 using DukaFlow.Infrastructure.Authentication;
@@ -21,7 +22,7 @@ public static class DependencyInjection
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IRestaurantService, RestaurantService>();
-
+        services.AddScoped<IMenuService, MenuService>();
         return services;
     }
 }
