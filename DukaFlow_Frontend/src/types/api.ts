@@ -54,3 +54,65 @@ export interface ApiErrorResponse {
   message: string;
   errors: string[];
 }
+
+// ---- Menu (Phase 2) ----
+
+export interface MenuCategoryDto {
+  id: string;
+  name: string;
+  description?: string | null;
+  displayOrder: number;
+  isActive: boolean;
+}
+
+export interface CreateMenuCategoryRequest {
+  name: string;
+  description?: string | null;
+  displayOrder: number;
+}
+
+export interface UpdateMenuCategoryRequest {
+  name: string;
+  description?: string | null;
+  displayOrder: number;
+  isActive: boolean;
+}
+
+export interface MenuItemDto {
+  id: string;
+  menuCategoryId: string;
+  name: string;
+  description?: string | null;
+  price: number;
+  imageUrl?: string | null;
+  isAvailable: boolean;
+  isActive: boolean;
+  displayOrder: number;
+}
+
+export interface CreateMenuItemRequest {
+  menuCategoryId: string;
+  name: string;
+  description?: string | null;
+  price: number;
+  imageUrl?: string | null;
+  displayOrder: number;
+}
+
+export interface UpdateMenuItemRequest {
+  menuCategoryId: string;
+  name: string;
+  description?: string | null;
+  price: number;
+  imageUrl?: string | null;
+  isAvailable: boolean;
+  isActive: boolean;
+  displayOrder: number;
+}
+
+// The Menu controllers wrap their payload as { success, data }, unlike
+// Auth/Restaurant endpoints which return the DTO directly. See menuApi.ts.
+export interface ApiEnvelope<T> {
+  success: boolean;
+  data: T;
+}

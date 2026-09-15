@@ -1,15 +1,25 @@
 import { useState, type FormEvent } from 'react'
 import { useAuth } from '../../auth/AuthContext'
 import { FormField } from '../../components/FormField'
-import { api } from '../../services/api'
-import type { Restaurant } from '../../types/auth'
+import { restaurantApi } from '../../services/restaurantApi'
+import type { UpdateRestaurantRequest } from '../../types/api'
+
+const emptyForm: UpdateRestaurantRequest = {
+  name: '',
+  description: '',
+  phoneNumber: '',
+  whatsAppNumber: '',
+  address: '',
+}
 
 export function SettingsPage() {
-  const { restaurant } = useAuth()
-  const [form, setForm] = useState<Partial<Restaurant>>(restaurant ?? {})
+  const { restaurant, refreshRestaurant } = useAuth()
+  const [form, setForm] = useState<UpdateRestaurantRequest>(
+    restaurant ? { ...emptyForm, ...restaurant } : emptyForm
+  )
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
 
-  function updateField<K extends keyof Restaurant>(field: K, value: string) {
+  function updateField<K extends keyof UpdateRestaurantRequest>(field: K, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -17,7 +27,8 @@ export function SettingsPage() {
     e.preventDefault()
     setStatus('saving')
     try {
-      await api.put('/restaurants/me', form)
+      await restaurantApi.updateMine(form)
+      await refreshRestaurant()
       setStatus('saved')
     } catch {
       setStatus('error')

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useToast } from '../../components/Toast/ToastContext'
 import { useAuth } from '../../auth/AuthContext'
 import { FormField } from '../../components/FormField'
-import type { RegisterRequest } from '../../types/auth'
+import type { RegisterRequest } from '../../types/api'
 
 const initialForm: RegisterRequest = {
   firstName: '',

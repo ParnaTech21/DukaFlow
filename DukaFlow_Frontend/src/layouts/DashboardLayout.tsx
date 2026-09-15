@@ -3,7 +3,7 @@ import { useAuth } from '../auth/AuthContext'
 
 const navItems = [
   { label: 'Dashboard', to: '/dashboard', enabled: true },
-  { label: 'Menu', to: '/menu', enabled: false },
+  { label: 'Menu', to: '/menu', enabled: true },
   { label: 'Orders', to: '/orders', enabled: false },
   { label: 'Customers', to: '/customers', enabled: false },
   { label: 'Payments', to: '/payments', enabled: false },
