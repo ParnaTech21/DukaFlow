@@ -1,3 +1,3 @@
-namespace DukaFlow.Application.Menu.DTOs;
+namespace DukaFlow.Application.Auth.Interfaces;
 
 public record SetMenuItemAvailabilityRequest(bool IsAvailable);

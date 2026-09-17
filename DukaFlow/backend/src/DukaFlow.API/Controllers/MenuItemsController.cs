@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using DukaFlow.Application.Auth.Interfaces;
 using DukaFlow.Application.Menu.DTOs;
 using DukaFlow.Application.Restaurants.Interfaces;
 using Microsoft.AspNetCore.Authorization;
