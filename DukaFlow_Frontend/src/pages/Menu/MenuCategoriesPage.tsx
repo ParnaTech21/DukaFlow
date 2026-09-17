@@ -23,6 +23,7 @@ export function MenuCategoriesPage() {
   const [form, setForm] = useState<CategoryForm>(emptyForm(0))
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [showArchived, setShowArchived] = useState(false)
 
   useEffect(() => {
     load()
@@ -97,31 +98,39 @@ export function MenuCategoriesPage() {
     }
   }
 
-  async function handleToggleActive(category: MenuCategoryDto) {
+  async function handleArchive(category: MenuCategoryDto) {
+    if (
+      !window.confirm(
+        `Archive "${category.name}"? It will be hidden from your menu, and you can restore it anytime from "Show archived".`
+      )
+    )
+      return
+    try {
+      await menuApi.deleteCategory(category.id)
+      showToast('Category archived', 'success')
+      await load()
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Could not archive category', 'error')
+    }
+  }
+
+  async function handleRestore(category: MenuCategoryDto) {
     try {
       await menuApi.updateCategory(category.id, {
         name: category.name,
         description: category.description ?? null,
         displayOrder: category.displayOrder,
-        isActive: !category.isActive,
+        isActive: true,
       })
-      showToast(category.isActive ? 'Category deactivated' : 'Category activated', 'success')
+      showToast('Category restored', 'success')
       await load()
     } catch (err) {
-      showToast(err instanceof Error ? err.message : 'Could not update category', 'error')
+      showToast(err instanceof Error ? err.message : 'Could not restore category', 'error')
     }
   }
 
-  async function handleDelete(category: MenuCategoryDto) {
-    if (!window.confirm(`Delete "${category.name}"? This cannot be undone.`)) return
-    try {
-      await menuApi.deleteCategory(category.id)
-      showToast('Category deleted', 'success')
-      await load()
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : 'Could not delete category', 'error')
-    }
-  }
+  const visibleCategories = categories.filter((c) => showArchived || c.isActive)
+  const archivedCount = categories.filter((c) => !c.isActive).length
 
   return (
     <div className="max-w-3xl">
@@ -186,23 +195,37 @@ export function MenuCategoriesPage() {
         </form>
       )}
 
+      {archivedCount > 0 && (
+        <label className="mb-4 flex w-fit items-center gap-2 text-sm text-slate-600">
+          <input
+            type="checkbox"
+            checked={showArchived}
+            onChange={(e) => setShowArchived(e.target.checked)}
+            className="rounded border-slate-300"
+          />
+          Show archived ({archivedCount})
+        </label>
+      )}
+
       <div className="rounded-lg border border-slate-200 bg-white">
         {isLoading ? (
           <p className="p-6 text-sm text-slate-500">Loading categories...</p>
-        ) : categories.length === 0 ? (
+        ) : visibleCategories.length === 0 ? (
           <p className="p-6 text-sm text-slate-500">
-            No categories yet. Start by adding one, e.g. "Starters" or "Drinks".
+            {categories.length === 0
+              ? 'No categories yet. Start by adding one, e.g. "Starters" or "Drinks".'
+              : 'No active categories. Check "Show archived" to see archived ones.'}
           </p>
         ) : (
           <ul className="divide-y divide-slate-100">
-            {categories.map((category) => (
+            {visibleCategories.map((category) => (
               <li key={category.id} className="flex items-center justify-between gap-4 p-4">
                 <div className="min-w-0">
                   <p className="flex items-center gap-2 text-sm font-medium text-slate-800">
                     {category.name}
                     {!category.isActive && (
                       <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-normal text-slate-500">
-                        Inactive
+                        Archived
                       </span>
                     )}
                   </p>
@@ -211,24 +234,29 @@ export function MenuCategoriesPage() {
                   )}
                 </div>
                 <div className="flex shrink-0 gap-2">
-                  <button
-                    onClick={() => startEdit(category)}
-                    className="rounded-md border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:bg-slate-100"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleToggleActive(category)}
-                    className="rounded-md border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:bg-slate-100"
-                  >
-                    {category.isActive ? 'Deactivate' : 'Activate'}
-                  </button>
-                  <button
-                    onClick={() => handleDelete(category)}
-                    className="rounded-md border border-red-200 px-3 py-1 text-sm text-red-600 hover:bg-red-50"
-                  >
-                    Delete
-                  </button>
+                  {category.isActive ? (
+                    <>
+                      <button
+                        onClick={() => startEdit(category)}
+                        className="rounded-md border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:bg-slate-100"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleArchive(category)}
+                        className="rounded-md border border-red-200 px-3 py-1 text-sm text-red-600 hover:bg-red-50"
+                      >
+                        Archive
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => handleRestore(category)}
+                      className="rounded-md border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:bg-slate-100"
+                    >
+                      Restore
+                    </button>
+                  )}
                 </div>
               </li>
             ))}

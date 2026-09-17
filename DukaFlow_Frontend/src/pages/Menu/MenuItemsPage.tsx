@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { useToast } from '../../components/Toast/ToastContext'
 import { FormField } from '../../components/FormField'
 import { menuApi } from '../../services/menuApi'
@@ -39,6 +39,9 @@ export function MenuItemsPage() {
   const [form, setForm] = useState<ItemForm>(emptyForm('', 0))
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [showArchived, setShowArchived] = useState(false)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     load()
@@ -112,6 +115,23 @@ export function MenuItemsPage() {
     setForm((prev) => ({ ...prev, [field]: value }))
   }
 
+  async function handleImageSelected(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsUploadingImage(true)
+    try {
+      const result = await menuApi.uploadImage(file)
+      updateField('imageUrl', result.url)
+      showToast('Image uploaded', 'success')
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Could not upload image', 'error')
+    } finally {
+      setIsUploadingImage(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     const price = Number(form.price)
@@ -166,16 +186,43 @@ export function MenuItemsPage() {
     }
   }
 
-  async function handleDelete(item: MenuItemDto) {
-    if (!window.confirm(`Delete "${item.name}"? This cannot be undone.`)) return
+  async function handleArchive(item: MenuItemDto) {
+    if (
+      !window.confirm(
+        `Archive "${item.name}"? It will be hidden from your menu, and you can restore it anytime from "Show archived".`
+      )
+    )
+      return
     try {
       await menuApi.deleteItem(item.id)
-      showToast('Item deleted', 'success')
+      showToast('Item archived', 'success')
       await loadItems()
     } catch (err) {
-      showToast(err instanceof Error ? err.message : 'Could not delete item', 'error')
+      showToast(err instanceof Error ? err.message : 'Could not archive item', 'error')
     }
   }
+
+  async function handleRestore(item: MenuItemDto) {
+    try {
+      await menuApi.updateItem(item.id, {
+        menuCategoryId: item.menuCategoryId,
+        name: item.name,
+        description: item.description ?? null,
+        price: item.price,
+        imageUrl: item.imageUrl ?? null,
+        isAvailable: item.isAvailable,
+        isActive: true,
+        displayOrder: item.displayOrder,
+      })
+      showToast('Item restored', 'success')
+      await loadItems()
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : 'Could not restore item', 'error')
+    }
+  }
+
+  const visibleItems = items.filter((i) => showArchived || i.isActive)
+  const archivedCount = items.filter((i) => !i.isActive).length
 
   return (
     <div className="max-w-4xl">
@@ -253,17 +300,41 @@ export function MenuItemsPage() {
               onChange={(e) => updateField('displayOrder', Number(e.target.value))}
             />
           </div>
-          <FormField
-            id="itemImageUrl"
-            label="Image URL (optional)"
-            value={form.imageUrl}
-            onChange={(e) => updateField('imageUrl', e.target.value)}
-          />
+
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-slate-700">Image (optional)</label>
+            <div className="flex items-center gap-3">
+              {form.imageUrl && (
+                <img
+                  src={form.imageUrl}
+                  alt="Item preview"
+                  className="h-16 w-16 rounded-md border border-slate-200 object-cover"
+                />
+              )}
+              <div className="flex flex-col gap-1">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleImageSelected}
+                  disabled={isUploadingImage}
+                  className="text-sm text-slate-600"
+                />
+                {isUploadingImage && <span className="text-xs text-slate-400">Uploading...</span>}
+              </div>
+            </div>
+            <FormField
+              id="itemImageUrl"
+              label="Or paste an image URL"
+              value={form.imageUrl}
+              onChange={(e) => updateField('imageUrl', e.target.value)}
+            />
+          </div>
 
           <div className="flex gap-2">
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isUploadingImage}
               className="rounded-md bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 disabled:opacity-60"
             >
               {isSubmitting ? 'Saving...' : 'Save item'}
@@ -279,75 +350,111 @@ export function MenuItemsPage() {
         </form>
       )}
 
-      <div className="mb-4 flex items-center gap-2">
-        <label htmlFor="categoryFilter" className="text-sm text-slate-600">
-          Filter by category:
-        </label>
-        <select
-          id="categoryFilter"
-          value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
-          className="rounded-md border border-slate-300 px-2 py-1 text-sm outline-none focus:border-brand-500"
-        >
-          <option value="all">All categories</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
+      <div className="mb-4 flex flex-wrap items-center gap-4">
+        <div className="flex items-center gap-2">
+          <label htmlFor="categoryFilter" className="text-sm text-slate-600">
+            Filter by category:
+          </label>
+          <select
+            id="categoryFilter"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="rounded-md border border-slate-300 px-2 py-1 text-sm outline-none focus:border-brand-500"
+          >
+            <option value="all">All categories</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {archivedCount > 0 && (
+          <label className="flex items-center gap-2 text-sm text-slate-600">
+            <input
+              type="checkbox"
+              checked={showArchived}
+              onChange={(e) => setShowArchived(e.target.checked)}
+              className="rounded border-slate-300"
+            />
+            Show archived ({archivedCount})
+          </label>
+        )}
       </div>
 
       <div className="rounded-lg border border-slate-200 bg-white">
         {isLoading ? (
           <p className="p-6 text-sm text-slate-500">Loading items...</p>
-        ) : items.length === 0 ? (
+        ) : visibleItems.length === 0 ? (
           <p className="p-6 text-sm text-slate-500">
             {categories.length === 0
               ? 'Add a category first, then add your menu items.'
-              : 'No items yet in this view.'}
+              : items.length === 0
+                ? 'No items yet in this view.'
+                : 'No active items. Check "Show archived" to see archived ones.'}
           </p>
         ) : (
           <ul className="divide-y divide-slate-100">
-            {items.map((item) => (
+            {visibleItems.map((item) => (
               <li key={item.id} className="flex items-center justify-between gap-4 p-4">
-                <div className="min-w-0">
-                  <p className="flex items-center gap-2 text-sm font-medium text-slate-800">
-                    {item.name}
-                    {!item.isAvailable && (
-                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-normal text-amber-700">
-                        Unavailable
-                      </span>
-                    )}
-                    {!item.isActive && (
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-normal text-slate-500">
-                        Inactive
-                      </span>
-                    )}
-                  </p>
-                  <p className="text-sm text-slate-500">
-                    {categoryName(item.menuCategoryId)} · UGX {formatPrice(item.price)}
-                  </p>
+                <div className="flex min-w-0 items-center gap-3">
+                  {item.imageUrl && (
+                    <img
+                      src={item.imageUrl}
+                      alt={item.name}
+                      className="h-12 w-12 shrink-0 rounded-md border border-slate-200 object-cover"
+                    />
+                  )}
+                  <div className="min-w-0">
+                    <p className="flex items-center gap-2 text-sm font-medium text-slate-800">
+                      {item.name}
+                      {!item.isAvailable && (
+                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-normal text-amber-700">
+                          Unavailable
+                        </span>
+                      )}
+                      {!item.isActive && (
+                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-normal text-slate-500">
+                          Archived
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-sm text-slate-500">
+                      {categoryName(item.menuCategoryId)} · UGX {formatPrice(item.price)}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex shrink-0 gap-2">
-                  <button
-                    onClick={() => startEdit(item)}
-                    className="rounded-md border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:bg-slate-100"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleToggleAvailability(item)}
-                    className="rounded-md border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:bg-slate-100"
-                  >
-                    {item.isAvailable ? 'Mark unavailable' : 'Mark available'}
-                  </button>
-                  <button
-                    onClick={() => handleDelete(item)}
-                    className="rounded-md border border-red-200 px-3 py-1 text-sm text-red-600 hover:bg-red-50"
-                  >
-                    Delete
-                  </button>
+                  {item.isActive ? (
+                    <>
+                      <button
+                        onClick={() => startEdit(item)}
+                        className="rounded-md border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:bg-slate-100"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleToggleAvailability(item)}
+                        className="rounded-md border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:bg-slate-100"
+                      >
+                        {item.isAvailable ? 'Mark unavailable' : 'Mark available'}
+                      </button>
+                      <button
+                        onClick={() => handleArchive(item)}
+                        className="rounded-md border border-red-200 px-3 py-1 text-sm text-red-600 hover:bg-red-50"
+                      >
+                        Archive
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => handleRestore(item)}
+                      className="rounded-md border border-slate-200 px-3 py-1 text-sm text-slate-600 hover:bg-slate-100"
+                    >
+                      Restore
+                    </button>
+                  )}
                 </div>
               </li>
             ))}

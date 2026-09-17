@@ -110,6 +110,10 @@ export interface UpdateMenuItemRequest {
   displayOrder: number;
 }
 
+export interface UploadImageResponse {
+  url: string;
+}
+
 // The Menu controllers wrap their payload as { success, data }, unlike
 // Auth/Restaurant endpoints which return the DTO directly. See menuApi.ts.
 export interface ApiEnvelope<T> {

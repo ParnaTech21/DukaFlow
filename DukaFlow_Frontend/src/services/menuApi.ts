@@ -7,6 +7,7 @@ import type {
   MenuItemDto,
   UpdateMenuCategoryRequest,
   UpdateMenuItemRequest,
+  UploadImageResponse,
 } from "../types/api";
 
 // The backend menu endpoints wrap their payload as { success, data } (unlike
@@ -42,7 +43,15 @@ export const menuApi = {
     unwrap<MenuItemDto>(api.put(`/menu/items/${id}`, data)),
 
   setItemAvailability: (id: string, isAvailable: boolean) =>
-    unwrap<MenuItemDto>(api.patch(`/menu/items/${id}/availability`, isAvailable)),
+    unwrap<MenuItemDto>(api.patch(`/menu/items/${id}/availability`, { isAvailable })),
 
   deleteItem: (id: string) => api.delete(`/menu/items/${id}`).then(() => undefined),
+
+  uploadImage: (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    // Let the browser set Content-Type (including the multipart boundary) itself —
+    // setting it manually here would strip the boundary and break the upload.
+    return unwrap<UploadImageResponse>(api.post("/menu/images", formData));
+  },
 };
