@@ -1,8 +1,10 @@
 using DukaFlow.Application.Auth.Interfaces;
+using DukaFlow.Application.Menu.Interfaces;
 using DukaFlow.Application.Menu.Services;
 using DukaFlow.Application.Restaurants.Interfaces;
 using DukaFlow.Infrastructure.Auth;
 using DukaFlow.Infrastructure.Authentication;
+using DukaFlow.Infrastructure.Menu;
 using DukaFlow.Infrastructure.Persistence;
 using DukaFlow.Infrastructure.Restaurants;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IRestaurantService, RestaurantService>();
         services.AddScoped<IMenuService, MenuService>();
+        services.AddScoped<IImageStorageService, LocalImageStorageService>();
         return services;
     }
 }

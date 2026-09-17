@@ -79,6 +79,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(); // serves wwwroot/uploads/menu for uploaded menu item images
 app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();

@@ -64,10 +64,10 @@ public class MenuItemsController : ControllerBase
     }
 
     [HttpPatch("{id:guid}/availability")]
-    public async Task<IActionResult> SetAvailability(Guid id, [FromBody] bool isAvailable, CancellationToken ct)
+    public async Task<IActionResult> SetAvailability(Guid id, SetMenuItemAvailabilityRequest request, CancellationToken ct)
     {
         var restaurantId = await GetCurrentRestaurantIdAsync(ct);
-        var item = await _menuService.SetItemAvailabilityAsync(restaurantId, id, isAvailable, ct);
+        var item = await _menuService.SetItemAvailabilityAsync(restaurantId, id, request.IsAvailable, ct);
         return Ok(new { success = true, data = item });
     }
 

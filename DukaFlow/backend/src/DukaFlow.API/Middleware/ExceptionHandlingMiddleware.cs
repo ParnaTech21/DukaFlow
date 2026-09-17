@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
 using DukaFlow.Application.Common;
@@ -28,6 +29,7 @@ public class ExceptionHandlingMiddleware
                 ConflictException => (HttpStatusCode.Conflict, ex.Message),
                 UnauthorizedAppException => (HttpStatusCode.Unauthorized, ex.Message),
                 NotFoundException => (HttpStatusCode.NotFound, ex.Message),
+                ValidationException => (HttpStatusCode.BadRequest, ex.Message),
                 _ => (HttpStatusCode.InternalServerError, "An unexpected error occurred.")
             };
 
