@@ -11,6 +11,14 @@ public class DukaFlowDbContext : DbContext
     public DbSet<Restaurant> Restaurants => Set<Restaurant>();
     public DbSet<MenuCategory> MenuCategories => Set<MenuCategory>();
     public DbSet<MenuItem> MenuItems => Set<MenuItem>();
+
+    // Phase 3 - Ordering Engine
+    public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<Cart> Carts => Set<Cart>();
+    public DbSet<CartItem> CartItems => Set<CartItem>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DukaFlowDbContext).Assembly);

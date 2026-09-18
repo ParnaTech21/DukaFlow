@@ -1,10 +1,12 @@
 using DukaFlow.Application.Auth.Interfaces;
 using DukaFlow.Application.Menu.Interfaces;
 using DukaFlow.Application.Menu.Services;
+using DukaFlow.Application.Ordering.Interfaces;
 using DukaFlow.Application.Restaurants.Interfaces;
 using DukaFlow.Infrastructure.Auth;
 using DukaFlow.Infrastructure.Authentication;
 using DukaFlow.Infrastructure.Menu;
+using DukaFlow.Infrastructure.Ordering;
 using DukaFlow.Infrastructure.Persistence;
 using DukaFlow.Infrastructure.Restaurants;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +28,13 @@ public static class DependencyInjection
         services.AddScoped<IRestaurantService, RestaurantService>();
         services.AddScoped<IMenuService, MenuService>();
         services.AddScoped<IImageStorageService, LocalImageStorageService>();
+
+        // Phase 3 - Ordering Engine
+        services.AddScoped<ICartService, CartService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IPublicMenuService, PublicMenuService>();
+        services.AddScoped<IOrderNumberGenerator, OrderNumberGenerator>();
+
         return services;
     }
 }
