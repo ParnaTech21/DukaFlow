@@ -7,6 +7,8 @@ import { DashboardPage } from './pages/Dashboard/DashboardPage'
 import { SettingsPage } from './pages/Settings/SettingsPage'
 import { MenuCategoriesPage } from './pages/Menu/MenuCategoriesPage'
 import { MenuItemsPage } from './pages/Menu/MenuItemsPage'
+import { OrdersPage } from './pages/Orders/OrdersPage'
+import { OrderDetailPage } from './pages/Orders/OrderDetailPage'
 
 // AuthProvider lives in main.tsx, wrapping this component once at the root.
 
@@ -27,6 +29,8 @@ function App() {
         <Route path="/menu" element={<Navigate to="/menu/categories" replace />} />
         <Route path="/menu/categories" element={<MenuCategoriesPage />} />
         <Route path="/menu/items" element={<MenuItemsPage />} />
+        <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/orders/:id" element={<OrderDetailPage />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Route>
 
