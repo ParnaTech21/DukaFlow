@@ -19,6 +19,12 @@ public class DukaFlowDbContext : DbContext
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
+    // Phase 4 - WhatsApp Integration
+    public DbSet<WhatsAppBusinessConfiguration> WhatsAppBusinessConfigurations => Set<WhatsAppBusinessConfiguration>();
+    public DbSet<Conversation> Conversations => Set<Conversation>();
+    public DbSet<Message> Messages => Set<Message>();
+    public DbSet<InboundMessage> InboundMessages => Set<InboundMessage>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DukaFlowDbContext).Assembly);
